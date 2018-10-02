@@ -200,9 +200,9 @@ namespace ns3 {
 
             void AddBlock(const Block& newBlock);
 
-            //void AddOrphan(const Block& newBlock);
+            void AddOrphan(const Block& newBlock);
 
-            //void RemoveOrphan (const Block& newBlock);
+            void RemoveOrphan (const Block& newBlock);
 
             //void PrintOrphans(void);
 

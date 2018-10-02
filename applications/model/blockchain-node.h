@@ -228,7 +228,7 @@ namespace ns3 {
             std::vector<Ipv4Address>                        m_peersAddresses;                   // The address of peers
             std::map<Ipv4Address, double>                   m_peersDownloadSpeeds;              // The peerDownloadSpeeds of channels
             std::map<Ipv4Address, double>                   m_peersUploadSpeeds;                // The peerUploadSpeeds of channels
-            std::map<Ipv4Address, Ptr<Socket>>              m_peersSokcets;                     // The sockets of peers
+            std::map<Ipv4Address, Ptr<Socket>>              m_peersSockets;                     // The sockets of peers
             std::map<std::string, std::vector<Address>>     m_queueInv;
             std::map<std::string, EventId>                  m_invTimeouts;
             std::map<Address, std::string>                  m_bufferedData;                     // map holding the buffered data from previous handleRead events

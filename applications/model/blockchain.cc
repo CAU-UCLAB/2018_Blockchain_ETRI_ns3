@@ -516,14 +516,45 @@ namespace ns3{
         m_totalBlocks++;
     }
 
+    void
+    Blockchain::AddOrphan(const Block& newBlock)
+    {
+        m_orphans.push_back(newBlock);
+    }
+
+    void
+    Blockchain::RemoveOrphan(const Block& newBlock)
+    {
+        std::vector<Block>::iterator block_it;
+
+        for(block_it = m_orphans.begin(); block_it < m_orphans.end(); block_it++)
+        {
+            if(newBlock==*block_it)
+            {
+                break;
+            }
+        }
+        
+        if(block_it == m_orphans.end())
+        {
+            return;
+        }
+        else
+        {
+            m_orphans.erase(block_it);
+        }
+    }
+
+
+
     const char* getMessageName(enum Messages m)
     {
         switch(m)
         {
             case INV: return "INV";
             case TRANSACTION: return "TRANSACTION";
-            case GET_HEADER: return "GET_HEADER";
-            case HEADER: return "HEADER";
+            case GET_HEADERS: return "GET_HEADERS";
+            case HEADERS: return "HEADERS";
             case GET_DATA: return "GET_DATA";
             case BLOCK: return "BLOCK";
             case NO_MESSAGE: return "NO_MESSAGE";
