@@ -51,6 +51,7 @@ namespace ns3 {
         int     blocksInForks;
         int     connections;
         int     minedBlocksInMainChain;
+        long    blockTimeouts;
         
     } nodeStatistics;
 
