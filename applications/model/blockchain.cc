@@ -563,6 +563,17 @@ namespace ns3{
         return 0;
     }
 
+    const char* getMinerType(enum MinerType m)
+    {
+        switch(m)
+        {
+            case ETHEREUM: return "ETHEREUM";
+            case LEDGER: return "LEDGER";
+        }
+
+        return 0;
+    }
+
     const char* getProtocolType(enum ProtocolType m)
     {
          switch(m)

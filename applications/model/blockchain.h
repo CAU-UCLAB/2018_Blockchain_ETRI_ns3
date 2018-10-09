@@ -19,6 +19,12 @@ namespace ns3 {
         NO_MESSAGE,     //6
     };
 
+    enum MinerType
+    {
+        ETHEREUM,
+        LEDGER
+    };
+    
     enum ProtocolType
     {
         STANDARD_PROTOCOL,      //default
@@ -61,6 +67,7 @@ namespace ns3 {
     } nodeInternetSpeed;
 
     const char* getMessageName(enum Messages m);
+    const char* getMinerType(enum MinerType m);
     const char* getProtocolType(enum ProtocolType m);
 
     class Transaction
