@@ -3,9 +3,9 @@
 
 #include "blockchain-node.h"
 #include <random>
-#include "../rapidjson/document.h"
-#include "../rapidjson/writer.h"
-#include "../rapidjson/stringbuffer.h"
+#include "../../rapidjson/document.h"
+#include "../../rapidjson/writer.h"
+#include "../../rapidjson/stringbuffer.h"
 
 
 namespace ns3{
@@ -84,6 +84,8 @@ namespace ns3{
 
             const double                m_realAverageBlockGenIntervalSeconds;   // in seconds, 15 sec(Ethereum)
             double                      m_averageBlockGenIntervalSeconds;
+
+            enum Cryptocurrency  m_cryptocurrency;
 
             double  m_timeStart;
             double  m_timeFinish;

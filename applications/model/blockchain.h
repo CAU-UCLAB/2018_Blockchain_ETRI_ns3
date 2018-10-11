@@ -21,14 +21,32 @@ namespace ns3 {
 
     enum MinerType
     {
-        ETHEREUM,
-        LEDGER
+        NORMAL_MINER,
+        ENDORSER,
+        ORDER,
     };
     
     enum ProtocolType
     {
         STANDARD_PROTOCOL,      //default
         SENDHEADERS
+    };
+
+    enum Cryptocurrency
+    {
+        ETHEREUM,
+        LEDGER
+    };
+
+    enum BlockchainRegion
+    {
+        NORTH_AMERICA,
+        EUROPE,
+        SOUTH_AMERICA,
+        KOREA,
+        JAPAN,
+        AUSTRALIA,
+        OTHER
     };
 
     typedef struct{
@@ -69,6 +87,9 @@ namespace ns3 {
     const char* getMessageName(enum Messages m);
     const char* getMinerType(enum MinerType m);
     const char* getProtocolType(enum ProtocolType m);
+    const char* getCryptocurrency(enum Cryptocurrency m);
+    const char* getBlockchainRegion(enum BlockchainRegion m);
+    enum BlockchainRegion getBlockchainEnum(uint32_t n);
 
     class Transaction
     {

@@ -567,8 +567,9 @@ namespace ns3{
     {
         switch(m)
         {
-            case ETHEREUM: return "ETHEREUM";
-            case LEDGER: return "LEDGER";
+            case NORMAL_MINER: return "ETHEREUM";
+            case ENDORSER: return "ENDORSER";
+            case ORDER: return "ORDER";
         }
 
         return 0;
@@ -583,6 +584,48 @@ namespace ns3{
          }
 
          return 0;
+    }
+
+    const char* getCryptocurrency(enum Cryptocurrency m)
+    {
+        switch(m)
+        {
+            case ETHEREUM: return "ETHEREUM";
+            case LEDGER: return "LEDGER";
+        }
+        
+        return 0;
+    }
+
+    const char* getBlockchainRegion(enum BlockchainRegion m)
+    {
+        switch(m)
+        {
+            case NORTH_AMERICA: return "NORTH_AMERICA";
+            case EUROPE: return "EUROPE";
+            case SOUTH_AMERICA: return "SOUTH_AMERICA";
+            case KOREA: return "KOREA";
+            case JAPAN: return "JAPAN";
+            case AUSTRALIA: return "AUSTRALIA";
+            case OTHER: return "OTHER";
+        }
+
+        return 0;
+    }
+
+    enum BlockchainRegion getBlockchainEnum(uint32_t n)
+    {
+        switch(n)
+        {
+            case 0: return NORTH_AMERICA;
+            case 1: return EUROPE;
+            case 2: return SOUTH_AMERICA;
+            case 3: return KOREA;
+            case 4: return JAPAN;
+            case 5: return AUSTRALIA;
+            case 6: return OTHER;
+        }
+        return OTHER;
     }
 
 }

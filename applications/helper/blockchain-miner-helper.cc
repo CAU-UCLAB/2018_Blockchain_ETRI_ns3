@@ -9,10 +9,10 @@
 
 namespace ns3 {
 
-    BlockchainMinerHelper::BlockchainMinerHelper(std::string protocol, Address address, std::vector<Ipv4Address> peers, int noMiners
+    BlockchainMinerHelper::BlockchainMinerHelper(std::string protocol, Address address, std::vector<Ipv4Address> peers, int noMiners,
                                                 std::map<Ipv4Address, double> &peersDownloadSpeeds, std::map<Ipv4Address, double> &peersUploadSpeeds,
                                                 nodeInternetSpeed &internetSpeeds, nodeStatistics *stats, double hashRate, double averageBlockGenIntervalSeconds)
-                                                :BlockchainNodeHelper(), m_blockGenBinSize(-1), m_blockGenParameter(-1)
+                                                :BlockchainNodeHelper(), m_minerType(NORMAL_MINER), m_blockGenBinSize(-1), m_blockGenParameter(-1)
     {
         m_factory.SetTypeId("ns3:BlockchainMiner");
         commonConstructor(protocol, address, peers, peersDownloadSpeeds, peersUploadSpeeds, internetSpeeds, stats);
@@ -29,23 +29,40 @@ namespace ns3 {
     Ptr<Application>
     BlockchainMinerHelper::InstallPriv(Ptr<Node> node)
     {
-        Ptr<BlockchainMiner> app = m_factory.Create<BlockchainMiner>();
-        app->SetPeersAddresses(m_peersAddresses);
-        app->SetPeersDownloadSpeeds(m_peersDownloadSpeeds);
-        app->SetPeersUploadSpeeds(m_peersUploadSpeeds);
-        app->SetNodeInternetSpeeds(m_internetSpeeds);
-        app->SetNodeStats(m_nodeStats);
-        app->SetProtocolType(m_protocolType);
+        switch(m_minerType)
+        {
+            case NORMAL_MINER:
+            {
+                Ptr<BlockchainMiner> app = m_factory.Create<BlockchainMiner>();
+                app->SetPeersAddresses(m_peersAddresses);
+                app->SetPeersDownloadSpeeds(m_peersDownloadSpeeds);
+                app->SetPeersUploadSpeeds(m_peersUploadSpeeds);
+                app->SetNodeInternetSpeeds(m_internetSpeeds);
+                app->SetNodeStats(m_nodeStats);
+                app->SetProtocolType(m_protocolType);
+                
+                node->AddApplication(app);
+                
+                return app;
+                //break;
+            }
+            case ENDORSER:
+            {
+                break;
+            }
+            case ORDER:
+            {
 
-        node->AddApplication(app);
+            }
+        }
 
-        return app;
+        return 0;
     }
 
     enum MinerType
     BlockchainMinerHelper::GetMinerType(void)
     {
-        returm m_minerType;
+        return m_minerType;
     }
 
     void
@@ -55,13 +72,18 @@ namespace ns3 {
 
         switch(m)
         {
-            case ETHEREUM:
+            case NORMAL_MINER:
             {
                 m_factory.SetTypeId("ns3::BlockchainMiner");
                 SetFactoryAttributes();
                 break;
             }
-            case LEDGER:
+            case ENDORSER:
+            {
+                m_factory.SetTypeId("ns3::BlockchainMiner");
+                SetFactoryAttributes();
+            }
+            case ORDER:
             {
                 m_factory.SetTypeId("ns3::BlockchainMiner");
                 SetFactoryAttributes();
@@ -84,6 +106,5 @@ namespace ns3 {
             m_factory.Set("BlockGenParameter", DoubleValue(m_blockGenParameter));
         }
     }
-
 
 }

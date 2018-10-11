@@ -9,9 +9,9 @@
 #include "ns3/address.h"
 #include "blockchain.h"
 #include "ns3/boolean.h"
-#include "../rapidjson/document.h"
-#include "../rapidjson/writer.h"
-#include "../rapidjson/stringbuffer.h"
+#include "../../rapidjson/document.h"
+#include "../../rapidjson/writer.h"
+#include "../../rapidjson/stringbuffer.h"
 
 namespace ns3 {
 

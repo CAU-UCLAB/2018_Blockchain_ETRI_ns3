@@ -84,6 +84,11 @@ namespace ns3 {
                             DoubleValue(15),
                             MakeDoubleAccessor(&BlockchainMiner::m_averageBlockGenIntervalSeconds),
                             MakeDoubleChecker<double>())
+            .AddAttribute("Cryptocurrency",
+                            "ETHEREUM, LEDGER",
+                            UintegerValue(0),
+                            MakeUintegerAccessor(&BlockchainMiner::m_cryptocurrency),
+                            MakeUintegerChecker<uint32_t> ())
             .AddTraceSource("Rx",
                             "A packet has been received",
                             MakeTraceSourceAccessor(&BlockchainMiner::m_rxTrace),
@@ -143,6 +148,7 @@ namespace ns3 {
         NS_LOG_WARN("Miner " << GetNode()->GetId() << " m_averageBlockGenIntervalSeconds = " << m_averageBlockGenIntervalSeconds << " s");
         NS_LOG_WARN("Miner " << GetNode()->GetId() << " m_fixedBlockTimeGeneration = " << m_fixedBlockTimeGeneration << " s");
         NS_LOG_WARN("Miner " << GetNode()->GetId() << " m_hashRate = " << m_hashRate);
+        NS_LOG_WARN("Miner " << GetNode()->GetId() << " m_cryptocurrency = " << m_cryptocurrency);
         
         if(m_blockGenBinSize < 0 && m_blockGenParameter <0)
         {
