@@ -10,7 +10,8 @@ namespace ns3 {
                                                 std::map<Ipv4Address, double> &peersDownloadSpeeds, std::map<Ipv4Address, double> &peersUploadSpeeds,
                                                 nodeInternetSpeed &internetSpeeds, nodeStatistics *stats)
     {
-        m_factory.SetTypeId("ns3:BlockchainNode");
+        m_factory.SetTypeId("ns3::BlockchainNode");
+        
         commonConstructor(protocol, address, peers, peersDownloadSpeeds, peersUploadSpeeds, internetSpeeds, stats);
     }
 
@@ -35,6 +36,7 @@ namespace ns3 {
 
         m_factory.Set("Protocol", StringValue(m_protocol));
         m_factory.Set("Local", AddressValue(m_address));
+        
 
     }
 

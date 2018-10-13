@@ -34,13 +34,13 @@ namespace ns3 {
                         MakeAddressAccessor(&BlockchainNode::m_local),
                         MakeAddressChecker())
         .AddAttribute("Protocol",
-                        "The type id of the protocol to us for the rx socket",
+                        "The type id of the protocol to use for the rx socket",
                         TypeIdValue (UdpSocketFactory::GetTypeId()),
                         MakeTypeIdAccessor (&BlockchainNode::m_tid),
                         MakeTypeIdChecker())
         .AddAttribute("InvTimeoutMinutes",
                         "The timeout of inv messages in minutes",
-                        TimeValue(Minutes(20)),
+                        TimeValue(Minutes(1)),
                         MakeTimeAccessor(&BlockchainNode::m_invTimeoutMinutes),
                         MakeTimeChecker())
         .AddTraceSource("Rx",
@@ -202,13 +202,13 @@ namespace ns3 {
         m_nodeStats->invReceivedBytes = 0;
         m_nodeStats->invSentBytes = 0;
         m_nodeStats->getHeadersReceivedBytes = 0;
-        m_nodeStats->getHeaderSentBytes = 0;
+        m_nodeStats->getHeadersSentBytes = 0;
         m_nodeStats->headersReceivedBytes = 0;
         m_nodeStats->headersSentBytes = 0;
         m_nodeStats->getDataReceivedBytes = 0;
         m_nodeStats->getDataSentBytes = 0;
-        m_nodeStats->blockReceivedByte = 0;
-        m_nodeStats->blockSentByte = 0;
+        m_nodeStats->blockReceivedBytes = 0;
+        m_nodeStats->blockSentBytes = 0;
         m_nodeStats->longestFork = 0;
         m_nodeStats->blocksInForks = 0;
         m_nodeStats->connections = m_peersAddresses.size();
@@ -707,7 +707,7 @@ namespace ns3 {
                                 blockMessageSize += d["blocks"][j]["size"].GetInt();
                             }
 
-                            m_nodeStats->blockReceivedByte += blockMessageSize;
+                            m_nodeStats->blockReceivedBytes += blockMessageSize;
 
                             rapidjson::StringBuffer blockInfo;
                             rapidjson::Writer<rapidjson::StringBuffer> blockWriter(blockInfo);
@@ -1082,7 +1082,7 @@ namespace ns3 {
             }
             case GET_HEADERS:
             {
-                m_nodeStats->getHeaderSentBytes += m_blockchainMessageHeader + m_getHeaderSizeBytes;
+                m_nodeStats->getHeadersSentBytes += m_blockchainMessageHeader + m_getHeaderSizeBytes;
                 break;
             }
             case HEADERS:
@@ -1099,9 +1099,9 @@ namespace ns3 {
             {
                 for(uint16_t k = 0; k < d["blocks"].Size(); k++)
                 {
-                    m_nodeStats->blockSentByte +=  d["blocks"][k]["size"].GetInt();
+                    m_nodeStats->blockSentBytes +=  d["blocks"][k]["size"].GetInt();
                 }
-                m_nodeStats->blockSentByte += m_blockchainMessageHeader;
+                m_nodeStats->blockSentBytes += m_blockchainMessageHeader;
                 break;
             }
         }
@@ -1150,7 +1150,7 @@ namespace ns3 {
             }
             case GET_HEADERS:
             {
-                m_nodeStats->getHeaderSentBytes += m_blockchainMessageHeader + m_getHeaderSizeBytes;
+                m_nodeStats->getHeadersSentBytes += m_blockchainMessageHeader + m_getHeaderSizeBytes;
                 break;
             }
             case HEADERS:
@@ -1167,9 +1167,9 @@ namespace ns3 {
             {
                 for(uint16_t k = 0; k < d["blocks"].Size(); k++)
                 {
-                    m_nodeStats->blockSentByte +=  d["blocks"][k]["size"].GetInt();
+                    m_nodeStats->blockSentBytes +=  d["blocks"][k]["size"].GetInt();
                 }
-                m_nodeStats->blockSentByte += m_blockchainMessageHeader;
+                m_nodeStats->blockSentBytes += m_blockchainMessageHeader;
                 break;
             }
         }
@@ -1219,7 +1219,7 @@ namespace ns3 {
             }
             case GET_HEADERS:
             {
-                m_nodeStats->getHeaderSentBytes += m_blockchainMessageHeader + m_getHeaderSizeBytes;
+                m_nodeStats->getHeadersSentBytes += m_blockchainMessageHeader + m_getHeaderSizeBytes;
                 break;
             }
             case HEADERS:
@@ -1236,9 +1236,9 @@ namespace ns3 {
             {
                 for(uint16_t k = 0; k < d["blocks"].Size(); k++)
                 {
-                    m_nodeStats->blockSentByte +=  d["blocks"][k]["size"].GetInt();
+                    m_nodeStats->blockSentBytes +=  d["blocks"][k]["size"].GetInt();
                 }
-                m_nodeStats->blockSentByte += m_blockchainMessageHeader;
+                m_nodeStats->blockSentBytes += m_blockchainMessageHeader;
                 break;
             }
         }

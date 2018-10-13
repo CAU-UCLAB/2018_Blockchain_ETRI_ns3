@@ -64,13 +64,13 @@ namespace ns3 {
         long    invReceivedBytes;
         long    invSentBytes;
         long    getHeadersReceivedBytes;
-        long    getHeaderSentBytes;
+        long    getHeadersSentBytes;
         long    headersReceivedBytes;
         long    headersSentBytes;
         long    getDataReceivedBytes;
         long    getDataSentBytes;
-        long    blockReceivedByte;
-        long    blockSentByte;
+        long    blockReceivedBytes;
+        long    blockSentBytes;
         int     longestFork;
         int     blocksInForks;
         int     connections;

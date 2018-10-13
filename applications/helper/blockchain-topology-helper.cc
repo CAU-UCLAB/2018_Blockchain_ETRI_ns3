@@ -692,7 +692,7 @@ BlockchainTopologyHelper::BlockchainTopologyHelper (uint32_t noCpus, uint32_t to
    
   }
   
-
+  NS_LOG_INFO("Setting bandwidth distribution");
   std::array<double,7> connectionsDistributionIntervals {1, 5, 10, 15, 20, 30, 125};
   for (int i = 0; i < 7; i++)
 	connectionsDistributionIntervals[i] -= i;
@@ -1017,7 +1017,7 @@ BlockchainTopologyHelper::BlockchainTopologyHelper (uint32_t noCpus, uint32_t to
               << " and whereas the maximum is " << m_maxConnectionsPerNode << ".\n";
   }
   
-  
+  NS_LOG_INFO("Setting InetnetStack and pointTopoint");
   InternetStackHelper stack;
   
   std::ostringstream latencyStringStream; 
@@ -1038,7 +1038,7 @@ BlockchainTopologyHelper::BlockchainTopologyHelper (uint32_t noCpus, uint32_t to
     AssignInternetSpeeds(i);
   }
 
-  
+  NS_LOG_INFO("Pirnt region bandwidths averages");
   //Print region bandwidths averages
   if (m_systemId == 0)
   {
@@ -1084,6 +1084,7 @@ BlockchainTopologyHelper::BlockchainTopologyHelper (uint32_t noCpus, uint32_t to
   tStart = GetWallTime();
   
   //Create first the links between miners
+  NS_LOG_INFO("Create first the links between miners");
   for(auto miner = m_miners.begin(); miner != m_miners.end(); miner++)  
   {
 
@@ -1111,6 +1112,7 @@ BlockchainTopologyHelper::BlockchainTopologyHelper (uint32_t noCpus, uint32_t to
           Ptr<ParetoRandomVariable> paretoDistribution = CreateObject<ParetoRandomVariable> ();
           paretoDistribution->SetAttribute ("Mean", DoubleValue (m_regionLatencies[m_blockchainNodesRegion[(m_nodes.at (*miner).Get (0))->GetId()]]
                                                                                   [m_blockchainNodesRegion[(m_nodes.at (*it).Get (0))->GetId()]]));
+          
           paretoDistribution->SetAttribute ("Shape", DoubleValue (m_regionLatencies[m_blockchainNodesRegion[(m_nodes.at (*miner).Get (0))->GetId()]]
                                                                                    [m_blockchainNodesRegion[(m_nodes.at (*it).Get (0))->GetId()]] / m_latencyParetoShapeDivider));
           latencyStringStream << paretoDistribution->GetValue() << "ms";
@@ -1161,6 +1163,7 @@ BlockchainTopologyHelper::BlockchainTopologyHelper (uint32_t noCpus, uint32_t to
           Ptr<ParetoRandomVariable> paretoDistribution = CreateObject<ParetoRandomVariable> ();
           paretoDistribution->SetAttribute ("Mean", DoubleValue (m_regionLatencies[m_blockchainNodesRegion[(m_nodes.at (node.first).Get (0))->GetId()]]
                                                                                   [m_blockchainNodesRegion[(m_nodes.at (*it).Get (0))->GetId()]]));
+          
           paretoDistribution->SetAttribute ("Shape", DoubleValue (m_regionLatencies[m_blockchainNodesRegion[(m_nodes.at (node.first).Get (0))->GetId()]]
                                                                                    [m_blockchainNodesRegion[(m_nodes.at (*it).Get (0))->GetId()]] / m_latencyParetoShapeDivider));
           latencyStringStream << paretoDistribution->GetValue() << "ms";
@@ -1189,6 +1192,7 @@ BlockchainTopologyHelper::BlockchainTopologyHelper (uint32_t noCpus, uint32_t to
 
 BlockchainTopologyHelper::~BlockchainTopologyHelper ()
 {
+  NS_LOG_FUNCTION(this);
   delete[] m_blockchainNodesRegion;
   delete[] m_minersRegions;
 }
@@ -1196,6 +1200,7 @@ BlockchainTopologyHelper::~BlockchainTopologyHelper ()
 void
 BlockchainTopologyHelper::InstallStack (InternetStackHelper stack)
 {
+  NS_LOG_FUNCTION(this);
   double tStart = GetWallTime();
   double tFinish;
   
@@ -1216,6 +1221,8 @@ BlockchainTopologyHelper::InstallStack (InternetStackHelper stack)
 void
 BlockchainTopologyHelper::AssignIpv4Addresses (Ipv4AddressHelperCustom ip)
 {
+  NS_LOG_FUNCTION(this);
+
   double tStart = GetWallTime();
   double tFinish;
   

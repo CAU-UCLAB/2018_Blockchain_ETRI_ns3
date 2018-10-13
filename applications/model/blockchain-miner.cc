@@ -61,7 +61,7 @@ namespace ns3 {
                             MakeDoubleChecker<double>())
             .AddAttribute("InvTimeoutMinutes",
                             "The timeout of inv messages in minutes",
-                            TimeValue(Minutes(20)),
+                            TimeValue(Minutes(1)),
                             MakeTimeAccessor(&BlockchainMiner::m_invTimeoutMinutes),
                             MakeTimeChecker())
             .AddAttribute("HashRate",
@@ -432,7 +432,7 @@ namespace ns3 {
         d.Accept(writer);
 
         SendMessage(NO_MESSAGE, BLOCK, d, socket);
-        m_nodeStats->blockSentByte -= m_blockchainMessageHeader + d["blocks"][0]["size"].GetInt();
+        m_nodeStats->blockSentBytes -= m_blockchainMessageHeader + d["blocks"][0]["size"].GetInt();
 
     }
 
