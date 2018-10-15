@@ -240,7 +240,7 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
-                    blockchainNodeHelper.SetAttribute("InvTimeoutMinutes", TimeValue(Minutes(2*averageBlockGenIntervalMinuates)));
+                    blockchainNodeHelper.SetAttribute("InvTimeoutMinutes", TimeValue(Minutes(4*averageBlockGenIntervalMinuates)));
                 }
 
                 blockchainNodeHelper.SetPeersAddresses(node.second);
@@ -373,8 +373,8 @@ int main(int argc, char *argv[])
         tFinish = get_wall_time();
 
         PrintTotalStats(stats, totalNoNodes, tStartSimulation, tFinish, averageBlockGenIntervalMinuates);
-        std::cout<<"\nThe simulation ran for " << tFinish - tStart << "s simulating"
-                    << stop << "mins, Performed " << "Setup time = " << tStartSimulation - tStart << "s\n"
+        std::cout<<"\nThe simulation run for " << tFinish - tStart << "s simulating"
+                    << stop << " mins, Performed " << "Setup time = " << tStartSimulation - tStart << "s\n"
                     << "It consisted of " << totalNoNodes << "nodes (" << noMiners << "miners) with minConnectionPerNode= "
                     << minConnectionsPerNode << " and maxConnectionsperNode = " << maxConnectionsPerNode 
                     << " .\n the averageBlockGenIntervalSeconds was " << averageBlockGenIntervalSeconds << "sec.\n";

@@ -40,7 +40,7 @@ namespace ns3 {
                         MakeTypeIdChecker())
         .AddAttribute("InvTimeoutMinutes",
                         "The timeout of inv messages in minutes",
-                        TimeValue(Minutes(1)),
+                        TimeValue(Minutes(2)),
                         MakeTimeAccessor(&BlockchainNode::m_invTimeoutMinutes),
                         MakeTimeChecker())
         .AddTraceSource("Rx",
@@ -244,6 +244,12 @@ namespace ns3 {
         NS_LOG_WARN("Total Block = " << m_blockchain.GetTotalBlocks());
         NS_LOG_WARN("Received But Not Validataed size : " << m_receivedNotValidated.size());
         NS_LOG_WARN("m_sendBlockTime size = " <<m_receiveBlockTimes.size());
+
+        m_nodeStats->meanBlockReceiveTime = m_meanBlockReceiveTime;
+        m_nodeStats->meanBlockPropagationTime = m_meanBlockPropagationTime;
+        m_nodeStats->meanBlockSize = m_meanBlockSize;
+        m_nodeStats->totalBlocks = m_blockchain.GetTotalBlocks();
+        
         
     }
 
@@ -253,6 +259,7 @@ namespace ns3 {
         NS_LOG_INFO(this << socket);
         Ptr<Packet> packet;
         Address from;
+        //std::cout<<"Node : "<< GetNode()->GetId()<< " Receive packet\n";
 
         //double newBlockReceiveTime = Simulator::Now().GetSeconds();
 
@@ -317,6 +324,7 @@ namespace ns3 {
                             std::vector<std::string>::iterator  block_it;
 
                             m_nodeStats->invReceivedBytes += m_blockchainMessageHeader + m_countBytes + d["inv"].Size()*m_inventorySizeBytes; 
+                            
 
                             for(j = 0; j < d["inv"].Size() ; j++)
                             {
@@ -330,12 +338,18 @@ namespace ns3 {
 
                                 if(m_blockchain.HasBlock(height, minerId) || m_blockchain.IsOrphan(height, minerId) || ReceivedButNotValidated(parsedInv))
                                 {
+                                    /*std::cout<<"INV : Blockchain node " << GetNode()->GetId()
+                                                << " has already received the block with height = "
+                                                << height << " and minerId = " << minerId << "\n";*/
                                     NS_LOG_INFO("INV : Blockchain node " << GetNode()->GetId()
                                                 << " has already received the block with height = "
                                                 << height << " and minerId = " << minerId);
                                 }
                                 else
                                 {
+                                    /*std::cout<<"INV : Blockchain node " << GetNode()->GetId()
+                                                << " does not have the block with height = "
+                                                << height << " and minerId = " << minerId << "\n";*/
                                     NS_LOG_INFO("INV : Blockchain node " << GetNode()->GetId()
                                                 << " does not have the block with height = "
                                                 << height << " and minerId = " << minerId);
@@ -345,6 +359,8 @@ namespace ns3 {
                                      */
                                     if(m_invTimeouts.find(parsedInv) == m_invTimeouts.end())
                                     {
+                                        /*std::cout<<"INV: Blockchain node " << GetNode()->GetId()
+                                                    << " has not requested the block yet" << "\n";*/
                                         NS_LOG_INFO("INV: Blockchain node " << GetNode()->GetId()
                                                     << " has not requested the block yet");
                                         requestBlocks.push_back(parsedInv);
@@ -406,6 +422,10 @@ namespace ns3 {
 
                                 if(m_blockchain.HasBlock(height, minerId) || m_blockchain.IsOrphan(height, minerId))
                                 {
+                                    /*std::cout<<"GET_HEADERS: Blockchain node " << GetNode()->GetId()
+                                                << " has the block with height = " << height
+                                                << " and minerId = " << minerId << "\n";*/
+                                    
                                     NS_LOG_INFO("GET_HEADERS: Blockchain node " << GetNode()->GetId()
                                                 << " has the block with height = " << height
                                                 << " and minerId = " << minerId);
@@ -415,6 +435,10 @@ namespace ns3 {
                                 } 
                                 else if (ReceivedButNotValidated(blockHash))
                                 {
+                                    /*std::cout<<"GET_HEADERS: Blockchain node " << GetNode()->GetId()
+                                                << " has received but not yet validated the block with height = "
+                                                << height << " and minerId = " << minerId << "\n";*/
+                                    
                                     NS_LOG_INFO("GET_HEADERS: Blockchain node " << GetNode()->GetId()
                                                 << " has received but not yet validated the block with height = "
                                                 << height << " and minerId = " << minerId);
@@ -515,6 +539,10 @@ namespace ns3 {
 
                                 if (!m_blockchain.HasBlock(parentHeight, parentMinerId) && !m_blockchain.IsOrphan(parentHeight, parentMinerId) && !ReceivedButNotValidated(parentBlockHash))
                                 {
+                                    /*std::cout<<"The Block with height  = " << d["blocks"][j]["height"].GetInt()
+                                                << " and minerID = " << d["blocks"][j]["minerId"].GetInt()
+                                                << " is an orphan\n" << "\n";*/
+                                    
                                     NS_LOG_INFO("The Block with height  = " << d["blocks"][j]["height"].GetInt()
                                                 << " and minerID = " << d["blocks"][j]["minerId"].GetInt()
                                                 << " is an orphan\n");
@@ -542,6 +570,10 @@ namespace ns3 {
                                 }
                                 else
                                 {
+                                    /*std::cout<<"The Block with height = " << d["blocks"][j]["height"].GetInt()
+                                                << " and minerId = " << d["blocks"][j]["minerId"].GetInt()
+                                                << " is NOT an orphan\n";*/
+                                    
                                     NS_LOG_INFO("The Block with height = " << d["blocks"][j]["height"].GetInt()
                                                 << " and minerId = " << d["blocks"][j]["minerId"].GetInt()
                                                 << " is NOT an orphan\n");
@@ -701,18 +733,28 @@ namespace ns3 {
                             double minSpeed = std::min(m_downloadSpeed, m_peersUploadSpeeds[InetSocketAddress::ConvertFrom(from).GetIpv4()]*1000000/8);
 
                             blockMessageSize += m_blockchainMessageHeader;
+                            
 
                             for(unsigned int j = 0; j < d["blocks"].Size(); j++)
                             {
                                 blockMessageSize += d["blocks"][j]["size"].GetInt();
                             }
 
+                    
                             m_nodeStats->blockReceivedBytes += blockMessageSize;
 
                             rapidjson::StringBuffer blockInfo;
                             rapidjson::Writer<rapidjson::StringBuffer> blockWriter(blockInfo);
                             d.Accept(blockWriter);
-
+                            /*
+                            if(GetNode()->GetId() == 10)
+                            {
+                                std::cout<<"BLOCK: At time " << Simulator::Now().GetSeconds()
+                                        << " Node " << GetNode()->GetId()
+                                        << " received a block message " << blockInfo.GetString() << "\n";
+                            }
+                            */
+                            
                             NS_LOG_INFO("BLOCK: At time " << Simulator::Now().GetSeconds()
                                         << " Node " << GetNode()->GetId()
                                         << " received a block message " << blockInfo.GetString());
@@ -919,13 +961,15 @@ namespace ns3 {
         {
             NS_LOG_INFO("ValidateBlock : Block is an orphan");
             m_blockchain.AddOrphan(newBlock);
+            
         }
         else
         {
-            const int averageBlockSizeBytes = 458263;   // we should modify it
+            const int averageBlockSizeBytes = 238263;   // we should modify it
             const double averageValidationTimeSeconds = 0.174;
             double validationTime = averageValidationTimeSeconds * newBlock.GetBlockSizeBytes() / averageBlockSizeBytes;
-
+            
+            //std::cout<<"validationTime : " << validationTime << "\n";
             Simulator::Schedule (Seconds(validationTime), &BlockchainNode::AfterBlockValidation, this, newBlock);
             NS_LOG_INFO("ValidateBlock : the block will be validated in " << validationTime << "s");
         }
@@ -962,10 +1006,12 @@ namespace ns3 {
 
         m_meanBlockReceiveTime = (m_blockchain.GetTotalBlocks() - 1)/static_cast<double>(m_blockchain.GetTotalBlocks())*m_meanBlockReceiveTime
                                 + (newBlock.GetTimeReceived() - m_previousBlockReceiveTime)/(m_blockchain.GetTotalBlocks());
+        //std::cout << "m_meanBlockReceiveTime : "<<m_meanBlockReceiveTime <<"\n";
         m_previousBlockReceiveTime = newBlock.GetTimeReceived();
         
         m_meanBlockPropagationTime =  (m_blockchain.GetTotalBlocks() - 1)/static_cast<double>(m_blockchain.GetTotalBlocks())*m_meanBlockPropagationTime
                                 + (newBlock.GetTimeReceived() -newBlock.GetTimeStamp())/(m_blockchain.GetTotalBlocks());
+        //std::cout << " m_meanBlockPropagationTime : "<< m_meanBlockPropagationTime <<"\n";
         m_meanBlockSize = (m_blockchain.GetTotalBlocks() - 1)/static_cast<double>(m_blockchain.GetTotalBlocks()) * m_meanBlockSize
                             + (newBlock.GetBlockSizeBytes())/static_cast<double>(m_blockchain.GetTotalBlocks());
         
@@ -1002,7 +1048,7 @@ namespace ns3 {
     BlockchainNode::AdvertiseNewBlock(const Block &newBlock)
     {
         NS_LOG_FUNCTION(this);
-
+        
         rapidjson::Document d;
         rapidjson::Value value;
         rapidjson::Value array(rapidjson::kArrayType);
@@ -1034,7 +1080,7 @@ namespace ns3 {
             if(*i != newBlock.GetReceivedFromIpv4())
             {
                 const uint8_t delimiter[] = "#";
-
+                //std::cout<<"node : " <<GetNode()->GetId()<< " Advertise new block\n";
                 m_peersSockets[*i]->Send(reinterpret_cast<const uint8_t*>(packetInfo.GetString()), packetInfo.GetSize(), 0);
                 m_peersSockets[*i]->Send(delimiter, 1, 0);
 
@@ -1047,6 +1093,14 @@ namespace ns3 {
 
             }
         }
+        /*
+        if( GetNode()->GetId() == 5){
+            std::cout<< "AdvertiseNeBlock: At time " << Simulator::Now().GetSeconds()
+                            << "s blockchain node " << GetNode()->GetId() << " advertised a new block(height) :" 
+                            << newBlock.GetBlockHeight() << " minerId : " << newBlock.GetMinerId() <<"\n";
+        }
+        */
+        
     }
 
     void
@@ -1112,7 +1166,7 @@ namespace ns3 {
     BlockchainNode::SendMessage(enum Messages receivedMessage, enum Messages responseMessage, rapidjson::Document &d, Address &outgoingAddress)
     {
         NS_LOG_FUNCTION(this);
-
+        
         const uint8_t delimiter[] = "#";
 
         rapidjson::StringBuffer buffer;
@@ -1165,11 +1219,13 @@ namespace ns3 {
             }
             case BLOCK:
             {
-                for(uint16_t k = 0; k < d["blocks"].Size(); k++)
+                //std::cout<<"start add block size"<<"\n";
+                for(int k = 0; k < d["blocks"].Size(); k++)
                 {
                     m_nodeStats->blockSentBytes +=  d["blocks"][k]["size"].GetInt();
                 }
                 m_nodeStats->blockSentBytes += m_blockchainMessageHeader;
+                //std::cout<<"finish add block size"<<"\n";
                 break;
             }
         }
@@ -1249,7 +1305,7 @@ namespace ns3 {
     BlockchainNode::InvTimeoutExpired(std::string blockHash)
     {
         NS_LOG_FUNCTION(this);
-
+        
         std::string     invDelimiter = "/";
         size_t          invPos = blockHash.find(invDelimiter);
 
@@ -1258,6 +1314,10 @@ namespace ns3 {
 
         NS_LOG_INFO("Node " << GetNode()->GetId() << " : At time " << Simulator::Now().GetSeconds()
                     << " the timeour for block " << blockHash << " expired");
+
+        /*
+        std::cout<<"Node " << GetNode()->GetId() << " : At time " << Simulator::Now().GetSeconds()
+                    << " the timeour for block " << blockHash << " expired\n"; */           
 
         m_nodeStats->blockTimeouts++;
 
@@ -1273,21 +1333,23 @@ namespace ns3 {
             rapidjson::Value        array(rapidjson::kArrayType);
 
             d.SetObject();
-
+        
             d.AddMember("message", value, d.GetAllocator());
-
             value.SetString("block");
             d.AddMember("type", value, d.GetAllocator());
 
             value.SetString(blockHash.c_str(), blockHash.size(), d.GetAllocator());
             array.PushBack(value, d.GetAllocator());
+            d.AddMember("blocks", array, d.GetAllocator());
 
             int index = rand()%m_queueInv[blockHash].size();
             Address temp = m_queueInv[blockHash][0];
             m_queueInv[blockHash][0] = m_queueInv[blockHash][index];
             m_queueInv[blockHash][index] = temp;
 
+            
             SendMessage(INV, GET_HEADERS, d, *(m_queueInv[blockHash].begin()));
+            
             SendMessage(INV, GET_DATA, d, *(m_queueInv[blockHash].begin()));
 
             timeout = Simulator::Schedule(m_invTimeoutMinutes, &BlockchainNode::InvTimeoutExpired, this, blockHash);
@@ -1297,7 +1359,6 @@ namespace ns3 {
         {
             m_queueInv.erase(blockHash);
         }
-
 
     }
 
