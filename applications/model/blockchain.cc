@@ -14,17 +14,19 @@ namespace ns3{
      * 
      */
 
-    Transaction::Transaction(int nodeId, int transId, int transSizeByte, double timeStamp)
+    Transaction::Transaction(int nodeId, int transId, double timeStamp)
     {
         m_nodeId = nodeId;
         m_transId = transId;
-        m_transSizeByte = transSizeByte;
+        m_transSizeByte = 100;
         m_timeStamp = timeStamp;
+        m_validatation = false;
+        m_execution = false;
     }
     
     Transaction::Transaction()
     {
-        Transaction(0, 0, 0, 0);
+        Transaction(0, 0, 0);
     }
     
     Transaction::~Transaction()
@@ -79,6 +81,52 @@ namespace ns3{
         m_timeStamp = timeStamp;
     }
 
+    bool
+    Transaction::IsValidated(void) const
+    {
+        return m_validatation;
+    }
+
+    void
+    Transaction::SetValidation(void)
+    {
+        m_validatation = true;
+    }
+
+    bool
+    Transaction::IsExecuted(void) const
+    {
+        return m_execution;
+    }
+
+    void
+    Transaction::SetExecution(void)
+    {
+        m_execution = true;
+    }
+
+
+    Transaction&
+    Transaction::operator= (const Transaction &tranSource)
+    {
+        m_nodeId = tranSource.m_nodeId;
+        m_transId = tranSource.m_transId;
+        m_transSizeByte = tranSource.m_transSizeByte;
+        m_timeStamp = tranSource.m_timeStamp;
+        m_validatation = tranSource.m_validatation;
+        m_validatation = tranSource.m_execution;
+
+        return *this;
+    }
+
+    bool operator== (const Transaction &tran1, const Transaction &tran2)
+    {
+        if(tran1.GetTransNodeId() == tran2.GetTransNodeId() && tran1.GetTransId() == tran2.GetTransId())
+            return true;
+        else
+            return false;
+    }
+
     /*
      *
      * Class Block Function
@@ -115,6 +163,7 @@ namespace ns3{
         m_timeStamp = blockSource.m_timeStamp;
         m_timeReceived = blockSource.m_timeReceived;
         m_receivedFromIpv4 = blockSource.m_receivedFromIpv4;
+        m_transactions = blockSource.m_transactions;
         m_totalTransactions = 0;
         
     }
@@ -213,6 +262,18 @@ namespace ns3{
         m_receivedFromIpv4 = receivedFromIpv4;
     }
 
+    std::vector<Transaction>
+    Block::GetTransactions(void) const
+    {
+        return m_transactions;
+    }
+
+    void
+    Block::SetTransactions(const std::vector<Transaction> &transactions)
+    {
+        m_transactions = transactions;
+    }
+
     bool
     Block::IsParent(const Block &block) const
     {
@@ -251,12 +312,57 @@ namespace ns3{
         return Transaction();
     }
 
+    bool
+    Block::HasTransaction(Transaction &newTran) const
+    {
+        for(auto const &tran: m_transactions)
+        {
+                if(tran == newTran)
+                {
+                    return true;
+                }
+        }
+
+        return false;
+    }
+
+    bool
+    Block::HasTransaction(int nodeId, int tranId) const
+    {
+        for(auto const &tran: m_transactions)
+        {
+                if(tran.GetTransNodeId() == nodeId && tran.GetTransId() == tranId)
+                {
+                    return true;
+                }
+        }
+        return false;
+    }
+
     void
     Block::AddTransaction(const Transaction& newTrans)
     {
         m_transactions.push_back(newTrans);
         m_totalTransactions++;
     
+    }
+
+    void
+    Block::PrintAllTransaction(void)
+    {
+        if(m_transactions.size() != 0)
+        {
+            for(auto const &tran: m_transactions)
+            {
+                std::cout<<"[Blockheight: " <<m_blockHeight << "] Transaction nodeId: " 
+                    << tran.GetTransNodeId() << " transId : " << tran.GetTransId() << "\n";
+            }
+        }
+        else
+        {
+            std::cout<<"[Blockheight: " <<m_blockHeight << "]  do not have transactions\n";
+        }
+
     }
 
     Block&

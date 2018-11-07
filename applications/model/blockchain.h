@@ -76,6 +76,8 @@ namespace ns3 {
         int     connections;
         int     minedBlocksInMainChain;
         long    blockTimeouts;
+        double  meanTransactionConfirmTime;
+        int     nodeGeneratedTransaction;
         
     } nodeStatistics;
 
@@ -95,7 +97,7 @@ namespace ns3 {
     {
         public:
 
-            Transaction(int nodeId, int transId, int transSizeByte, double timeStamp);
+            Transaction(int nodeId, int transId, double timeStamp);
             Transaction();
             virtual ~Transaction(void);
 
@@ -110,14 +112,26 @@ namespace ns3 {
 
             double GetTransTimeStamp(void) const;
             void SetTransTimeStamp(double timeStamp);
+
+            bool IsValidated(void) const;
+            void SetValidation(void);
+
+            bool IsExecuted(void) const;
+            void SetExecution(void);
+
+            Transaction& operator = (const Transaction &tranSource);     //Assignment Constructor
+
+            friend bool operator == (const Transaction &tran1, const Transaction &tran2);
             
         
-        private:
+        protected:
             int m_nodeId;
             int m_transId;
             int m_transSizeByte;
             double m_timeStamp;
-        
+            bool m_validatation; 
+            bool m_execution;
+
     };
 
     class Block
@@ -153,8 +167,9 @@ namespace ns3 {
             Ipv4Address GetReceivedFromIpv4(void) const;
             void SetReceivedFromIpv4(Ipv4Address receivedFromIpv4);
 
+            std::vector<Transaction> GetTransactions(void) const;
+            void SetTransactions(const std::vector<Transaction> &transactions);
             /*
-
             * Checks if the block provided as the argument is the parent of this block object
             */
             bool IsParent (const Block &block) const;
@@ -167,9 +182,15 @@ namespace ns3 {
             int GetTotalTransaction(void) const;
 
             Transaction ReturnTransaction(int nodeId, int transId);
+
+            bool HasTransaction(Transaction &newTran) const;
+
+            bool HasTransaction(int nodeId, int tranId) const;
             
             void AddTransaction(const Transaction& newTrans);
 
+            void PrintAllTransaction(void);
+            
             Block& operator = (const Block &blockSource);     //Assignment Constructor
 
             friend bool operator == (const Block &block1, const Block &block2);

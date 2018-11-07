@@ -81,9 +81,10 @@ namespace ns3{
             double                      m_minerAverageBlockSize;
             //std::piecewise_constant_distribution<double> m_blockSizeDistribution;
             //std::normal_distribution<double>    m_blockSizeDistribution;
-
+            
             const double                m_realAverageBlockGenIntervalSeconds;   // in seconds, 15 sec(Ethereum)
             double                      m_averageBlockGenIntervalSeconds;
+
 
             enum Cryptocurrency  m_cryptocurrency;
 

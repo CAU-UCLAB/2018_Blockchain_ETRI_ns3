@@ -109,6 +109,7 @@ namespace ns3 {
              */
             void ValidateBlock(const Block &newBlock);
 
+            void ValidateTransaction(const Block &newBlock);
             /*
              * Adds the new block in to the blockchain, advertises it to the peers and validates any ophan children
              * param newBlock : the new block
@@ -132,6 +133,14 @@ namespace ns3 {
              * param newBlock : the new block
              */
             //void AdvertiseFullBlock (const Block &newBlock);
+
+            void AdvertiseNewTransaction(const Transaction &newTrans, Ipv4Address receivedFromIpv4);
+            
+            bool HasTransaction(int nodeId, int transId);
+
+            void CreateTransaction();
+
+            void ScheduleNextTransaction();
 
             /*
              * Send a message to a peer
@@ -224,7 +233,11 @@ namespace ns3 {
             double          m_uploadSpeed;                  // Bytes/s
             double          m_averageTransacionSize;        //The average transaction size, Needed for compressed blocks
             int             m_transactionIndexSize;         //The transaction index size in bytes. Needed for compressed blocks
+            int             m_transactionId;
+            EventId         m_nextTransaction;
 
+            std::vector<Transaction>                        m_transaction;
+            std::vector<Transaction>                        m_notValidatedTransaction;            
             std::vector<Ipv4Address>                        m_peersAddresses;                   // The address of peers
             std::map<Ipv4Address, double>                   m_peersDownloadSpeeds;              // The peerDownloadSpeeds of channels
             std::map<Ipv4Address, double>                   m_peersUploadSpeeds;                // The peerUploadSpeeds of channels
