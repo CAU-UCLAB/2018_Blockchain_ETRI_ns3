@@ -225,6 +225,8 @@ namespace ns3 {
             double          m_meanBlockReceiveTime;         //The mean time interval between two consecutive blocks (10~15sec)
             double          m_previousBlockReceiveTime;     //The time that the node received the previous block
             double          m_meanBlockPropagationTime;     //The mean time that the node has to wait in order to receive a newly mined block
+            double          m_meanMiningTime;
+            double          m_meanLatency;
             double          m_meanBlockSize;                //The mean Block size
             Blockchain      m_blockchain;                   //The node's blockchain
             Time            m_invTimeoutMinutes;
@@ -234,6 +236,8 @@ namespace ns3 {
             double          m_averageTransacionSize;        //The average transaction size, Needed for compressed blocks
             int             m_transactionIndexSize;         //The transaction index size in bytes. Needed for compressed blocks
             int             m_transactionId;
+            int             m_totalMining;
+            int             m_totalCreatedTransaction;
             EventId         m_nextTransaction;
 
             std::vector<Transaction>                        m_transaction;

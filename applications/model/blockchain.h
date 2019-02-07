@@ -78,6 +78,8 @@ namespace ns3 {
         long    blockTimeouts;
         double  meanTransactionConfirmTime;
         int     nodeGeneratedTransaction;
+        double  meanMiningTime;
+        double  meanLatency;
         
     } nodeStatistics;
 

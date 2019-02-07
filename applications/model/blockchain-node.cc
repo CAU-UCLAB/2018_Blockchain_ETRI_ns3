@@ -60,9 +60,13 @@ namespace ns3 {
         m_meanBlockReceiveTime = 0;
         m_previousBlockReceiveTime = 0;
         m_meanBlockPropagationTime = 0;
+        m_meanMiningTime = 0;
+        m_meanLatency = 0;
         m_meanBlockSize = 0;
         m_numberOfPeers = m_peersAddresses.size();
         m_transactionId = 1;
+        m_totalMining = 0;
+        m_totalCreatedTransaction = 0;
     }
 
     BlockchainNode::~BlockchainNode(void)
@@ -214,6 +218,8 @@ namespace ns3 {
         m_nodeStats->blocksInForks = 0;
         m_nodeStats->connections = m_peersAddresses.size();
         m_nodeStats->blockTimeouts = 0;
+        m_nodeStats->meanMiningTime = 0;
+        m_nodeStats->meanLatency = 0;
 
         CreateTransaction();
         //ScheduleNextTransaction();
@@ -254,7 +260,8 @@ namespace ns3 {
         m_nodeStats->meanBlockPropagationTime = m_meanBlockPropagationTime;
         m_nodeStats->meanBlockSize = m_meanBlockSize;
         m_nodeStats->totalBlocks = m_blockchain.GetTotalBlocks();
-        
+        m_nodeStats->meanMiningTime = m_meanMiningTime;
+        m_nodeStats->meanLatency = m_meanLatency;
         
     }
 
@@ -1061,6 +1068,7 @@ namespace ns3 {
             std::cout<<"Node "<<GetNode()->GetId() << " is validating transaction nodeId : " 
                     << trans_it->GetTransNodeId() << " transId: " << trans_it->GetTransId() << "\n";
             */
+            
             for(auto const &tran: m_transaction)
             {
                 if(tran == *trans_it)
@@ -1068,6 +1076,7 @@ namespace ns3 {
                     break;
                 }
             }
+            
             if(!m_notValidatedTransaction.empty())
             {
 
@@ -1075,6 +1084,11 @@ namespace ns3 {
                 {
                     if(*notValTrans_it == *trans_it)
                     {
+                        if(trans_it->GetTransNodeId() == GetNode()->GetId())
+                        {
+                            m_totalCreatedTransaction++;
+                            m_meanLatency = (m_meanLatency*static_cast<double>(m_totalCreatedTransaction-1) + (Simulator::Now().GetSeconds() - trans_it->GetTransTimeStamp()))/static_cast<double>(m_totalCreatedTransaction);
+                        }
                         notValTrans_it = m_notValidatedTransaction.erase(notValTrans_it);
                         break;
                     }

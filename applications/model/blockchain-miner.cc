@@ -368,6 +368,8 @@ namespace ns3 {
         for(trans_it = m_notValidatedTransaction.begin(); trans_it < m_notValidatedTransaction.end(); trans_it++)
         {
             trans_it->SetValidation();
+            m_totalMining++;
+            m_meanMiningTime = (m_meanMiningTime*static_cast<double>(m_totalMining-1) + (Simulator::Now().GetSeconds() - trans_it->GetTransTimeStamp()))/static_cast<double>(m_totalMining);
         }
         newBlock.SetTransactions(m_notValidatedTransaction);
         m_notValidatedTransaction.clear();
